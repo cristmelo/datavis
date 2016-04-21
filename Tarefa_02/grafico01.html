@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<title> Gráfico de Barras </title>
+		<!-- Inclusões das bibliotecas JavaScript para o Highcharts -->
+		<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+		<script src="http://code.highcharts.com/highcharts.js"></script>
+	</head>
+	<body>
+		<script>
+			$(function () {
+				$('#container').highcharts({
+
+					chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: 'Faturamento de bilheteria de estreia das animações da Disney e quais ganharam o oscar de melhor animação'
+                    },
+                    xAxis: {
+						categories: [ 'Toy Story 3', 'UP', 'Wall-e', 'Tangled', 'Ratatouille', 'A Christmas Carol', 'Bolt', 'Gnomeo and Juliet', 'Meet the Robinsons', 'The Princess Frog', 'Winnie The Pooh', 'Mars needs Moms'] 
+					},
+					yAxis: {
+						title: {
+							text: 'Bilheteria de estreia (em milhões)'
+						}
+					},
+					series: [{
+								name: 'Não ganhou oscar', 
+								data: [ 1103000, 0, 0, 488000, 0, 301000, 261000, 254000, 251000, 242000, 79000, 69000 ]
+							},{
+								name: 'Ganhou oscar', 
+								data: [ 0, 681000, 631000, 0, 470000, 0, 0, 0, 0, 0, 0, 0 ]
+							}]
+				});
+			});
+		</script>
+		<div id="container" style="width:100%; height:800px;"></div>
+	</body>
+</html>
+
+<!-- 
+
+* * O GRÁFICO * *
+O gráfico mostra o faturamento da bilheteria dos filmes da Disney em sua semana de abertura de estreia.
+No eixo Y temos os valores, em milhões, enquanto que no eixo X temos alguns filmes da Disney (disponibilizados no arquivo csv).
+Há também uma indicação de quais filmes foram premiados pela categoria de Melhor Animação do Oscar.
+-
+* * DIFICULDADES * *
+A parte mais difícil de montar este gráfico foi colocar uma cor para o filme que venceu o oscar e outra cor para o que não venceu.
+Não consegui trabalhar com a largura das barras (estão muito finas).
+Tentei ir pelo navegador, clicar com o botão direito e "inspecionar o elemento"; fiz a mudança de cor manualmente pelo próprio código-fonte, mas a alteração não chega a ser salva.
+
+-->
