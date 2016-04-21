@@ -1,0 +1,94 @@
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<title> Gráfico de Barras </title>
+		<!-- Inclusões das bibliotecas JavaScript para o Highcharts -->
+		<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+		<script src="http://code.highcharts.com/highcharts.js"></script>
+	</head>
+	<body>
+		<!-- BILHETERIA TOTAL ARRECADADA -->
+		<script>
+			$(function () {
+				$('#arrecadacaoMundial').highcharts({
+
+					chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: 'TOTAL DE BILHETERIAS'
+                    },
+                    xAxis: {
+						categories: ['Mundialmente', 'EUA', 'Brasil', 'Alemanha']
+					},
+					yAxis: {
+						title: {
+							text: 'Bilheteria arrecadada'
+						}
+					},
+					series: [{
+								name: 'Mulholland Drive',
+								data: [20117339, 7220243, 209299, 1539144]
+							}, {
+								name: 'Closer',
+								data: [115505027, 33987757, 3336436, 8158460]	
+							}, {
+								name: 'Eternal Sunshine',
+								data: [72258126, 34400301, 841660, 1247572]
+							}, {
+								name: '21 grams',
+								data: [60427839, 16290476, 909400, 1021277]
+							},{
+								name: 'Limitless',
+								data: [161849455, 79249455, 1865755, 13773623]
+							}]
+					});
+				});
+			
+		</script>
+		<div id="arrecadacaoMundial" style="width:100%; height:400px;"></div>
+		
+		<!-- BILHETERIA ARRECADADA NA ESTREIA-->	
+		<script>
+			$(function () {
+				$('#arrecadacaoNaEstreia').highcharts({
+
+				chart: {
+                        type: 'line'
+                    },
+                    title: {
+                        text: 'ARRECADAÇÃO DE BILHETERIA NA SEMANA DE ESTREIA'
+                    },
+                    xAxis: {
+						categories: ['Dia 1', 'Dia 2', 'Dia 3', 'Dia 4', 'Dia 5', 'Dia 6', 'Dia 7']
+					},
+					yAxis: {
+						title: {
+							text: 'Valor arrecadado (US$) corrigido pela inflação'
+						}
+					},
+					series: [{
+								name: 'Mulholland Drive',
+								data: [48100, 23200, 24400, 21800, 260300, 260300, 266100]
+							},{
+								name: 'Closer',
+								data: [2771134, 3077165, 1859673, 603677, 612697, 562296, 518385]
+							},{
+								name: 'Eternal Sunshine',
+								data: [2642974, 3355625, 2176599, 803000, 803000, 736000, 779000]
+							},{
+								name: '21 Grams',
+								data: [81222, 106301, 87015, 33861, 46000, 133000, 232000]
+							},{
+								name: 'Limitless',
+								data: [6631632, 7392507, 4883163, 1902118, 1601222, 4631821]
+							}]
+					});
+
+				});
+		</script>
+		<div id="arrecadacaoNaEstreia" style="width:100%; height:400px;"></div>
+
+	</body>
+</html>
+
