@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>EXERCÍCIO DE LABORATÓRIO: movies</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+</head>
+
+<body>
+
+    <div class="page-header"><h1>Laboratório do dia 27/04/16: usando D3</h1></div>
+
+    <p class="well lead">Construa um gráfico de barras ordenado da maior para a menor bilheteria.<br/> 
+    <div id="chart1"></div>
+
+    <p class="well lead">Construa um gráfico de barras ordenado do maior para o menor orçamento.</p> 
+    <div id="chart2"></div>
+
+    <p class="well lead">Construa um gráfico de barras ordenado do maior para o menor lucro.</p>    
+    <div id="chart3"></div>
+
+    <script type="text/javascript">
+
+            function render(input) {
+
+                renderBilheteria( input, comparePorMaiorBilheteria );
+                renderOrcamento( input, comparePorMaiorOrcamento );
+                renderLucro( input, comparePorMaiorLucro );
+            
+            }
+
+            function renderBilheteria( input, comparePorMaiorBilheteria ){
+
+                d3.select("#chart1").selectAll("div.h-bar")
+                        .data(input)
+                    .enter().append("div")
+                    .attr("class", "h-bar")
+                    .append("span");
+                
+                d3.select("#chart1").selectAll("div.h-bar")
+                        .data(input)
+                    .exit().remove();
+                
+                d3.select("#chart1").selectAll("div.h-bar")
+                        .data(input)
+                    .attr("class", "h-bar")
+                    .style("width", function (d) {
+                        return (d.Worldwide_Gross_M)/2.5 + "px";
+                    })
+                    .style("background-color", function(d){
+                            return (d.color) = "red"; 
+                        })
+                    .select("span")
+                        .text(function (d) {
+                            return d.Film;
+                        });
+                 if(comparePorMaiorBilheteria)
+                    d3.select("#chart1")
+                        .selectAll("div.h-bar") 
+                        .sort(comparePorMaiorBilheteria);
+
+            }
+
+
+            function renderOrcamento( input, comparePorMaiorOrcamento ){
+
+                d3.select("#chart2").selectAll("div.h-bar")
+                        .data(input)
+                    .enter().append("div")
+                    .attr("class", "h-bar")
+                    .append("span");
+                
+                d3.select("#chart2").selectAll("div.h-bar")
+                        .data(input)
+                    .exit().remove();
+                
+                d3.select("#chart2").selectAll("div.h-bar")
+                        .data(input)
+                    .attr("class", "h-bar")
+                    .style("width", function (d) {
+                        return (d.Budget_M) + "px";
+                    })
+                    .style("background-color", function(d){
+                            return (d.color) = "green"; 
+                        })
+                    .select("span")
+                        .text(function (d) {
+                            return d.Film;
+                        });
+                 if(comparePorMaiorOrcamento)
+                    d3.select("#chart2")
+                        .selectAll("div.h-bar") 
+                        .sort(comparePorMaiorOrcamento);
+
+            }
+
+            function renderLucro( input, comparePorMaiorLucro ){
+
+                d3.select("#chart3").selectAll("div.h-bar")
+                        .data(input)
+                    .enter().append("div")
+                    .attr("class", "h-bar")
+                    .append("span");
+                
+                d3.select("#chart3").selectAll("div.h-bar")
+                        .data(input)
+                    .exit().remove();
+                
+                d3.select("#chart3").selectAll("div.h-bar")
+                        .data(input)
+                    .attr("class", "h-bar")
+                    .style("width", function (d) {
+                        return (d.Worldwide_Gross_M - d.Budget_M)/2 + "px";
+                    })
+                    .style("background-color", function(d){
+                            return (d.color) = "purple"; 
+                        })
+                    .select("span")
+                        .text(function (d) {
+                            return d.Film;
+                        });
+                 if(comparePorMaiorLucro)
+                    d3.select("#chart3")
+                        .selectAll("div.h-bar") 
+                        .sort(comparePorMaiorLucro);
+
+            }
+
+
+            var comparePorMaiorBilheteria = function (a, b) { 
+                return a.Worldwide_Gross_M > b.Worldwide_Gross_M?-1:1;
+            };
+
+            var comparePorMaiorOrcamento = function (a, b) { 
+                return a.Budget_M > b.Budget_M?-1:1;
+            };
+            
+            var comparePorMaiorLucro = function (a, b){
+                return (a.Worldwide_Gross_M - a.Budget_M) > (b.Worldwide_Gross_M -  b.Budget_M)? -1:1;
+            }
+
+            d3.json("movies.json", function(error, json){ 
+                render( json );
+            });
+
+    </script>
+
+</body>
+
+</html>
