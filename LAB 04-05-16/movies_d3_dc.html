@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>LAB 3 - D3 + Crossfilter + dc.js</title>
+    <link rel="stylesheet" href="css/dc.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/crossfilter.js" charset="utf-8"></script>
+    <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="js/dc.js" charset="utf-8"></script>
+
+</head>
+<body>
+
+ <div class="page-header"><h1>Laboratório do dia 04/05/16: usando D3 + Crossfilter + dc.js</h1></div>
+
+ <p class="well lead">Valores das bilheterias por ano<br/> 
+ <div id="chart1"></div>
+
+ <p class="well lead">Total apurado por gênero<br/> 
+ <div id="chart2"></div>
+
+	<script type="text/javascript">
+       
+        // indicando o idioma para cada gráfico
+        var barChart1 = dc.barChart('#chart1'); 
+        var barChart2 = dc.barChart('#chart2'); 
+
+        // leitura de arquivo
+		d3.json('movies.json', function(data){ 
+			
+			//criando um crossfilter
+	        var facts = crossfilter(data);
+
+	        //criando dimensões para o ano e gênero
+	        var yearDim = facts.dimension( function(d){
+                return d.Year;
+            });
+
+            var genreDim = facts.dimension( function(d){
+                return d.Genre;
+            });
+
+            //criando grupos 
+	        var yearGroup = yearDim.group().reduceSum( function(d){
+                return d.Worldwide_Gross_M;
+            });
+
+            var genreGroup = genreDim.group().reduceSum( function(d){
+                return d.Worldwide_Gross_M;
+            });
+
+            var genreNames = data.map(function(d){return d.Genre;});
+
+            //console.log(facts.all()); //all() retorna todos os registros brutos
+
+            //fucking help in: http://dc-js.github.io/dc.js/docs/stock.html
+
+            barChart1 /* dc.barChart('#volume-month-chart', 'chartGroup') */
+                .width(450)
+                .height(500)
+                .margins({top: 10, right: 50, bottom: 20, left: 40})
+                .dimension(yearDim)
+                .group(yearGroup)
+                .gap(5)
+                .x(d3.scale.ordinal().domain( [2007, 2008, 2009, 2010, 2011] ))
+                .xUnits(dc.units.ordinal)
+                .renderHorizontalGridLines(true)
+
+            barChart2
+                .width(450)
+                .height(500)
+                .margins({top: 10, right: 50, bottom: 20, left: 40})
+                .dimension(genreDim)
+                .group(genreGroup)
+                .gap(5)
+                .x(d3.scale.ordinal().domain( genreNames ))
+                .xUnits(dc.units.ordinal)
+                .renderHorizontalGridLines(true)
+
+    
+            dc.renderAll();
+
+		});
+
+	</script>	
+
+
+</body>
+</html>
