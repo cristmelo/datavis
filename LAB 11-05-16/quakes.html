@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+    <html>
+        <head>
+			<title> Earthquake Data</title>
+			<link rel="stylesheet" href="css/dc.css">
+    		<link rel="stylesheet" href="css/styles.css">
+    		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
+    		<link rel="stylesheet" href=“css/leaflet.tooltip.css”/>
+			<script src="js/crossfilter.js" charset="utf-8"></script>
+    		<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    		<script src="js/leaflet.tooltip.js"></script>
+   			<script src="js/dc.js" charset="utf-8"></script>
+   			<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+
+		    <style type="text/css">  </style>		      
+		   
+        </head>
+        <body>
+    		
+			  <div>
+			    <div id='magnitude-chart'>
+			      <h4> Number of Events by Magnitude </h4>
+			  </div>
+
+			  <div id='depth-chart'>
+				  <h4> Events by Depth (km) </h4>
+			    </div>   
+			  </div>
+
+			  <div>
+			    <div id='time-chart'>
+			      <h4> Events per hour </h4>
+			    </div>
+			  </div>
+
+			  <div>
+			    <div id='mapid'>
+			      <h4> map </h4>
+			    </div>
+			  </div>			  
+
+			<script type="text/javascript">
+			
+			// Create the dc.js chart objects & link to div
+			var barChart1 = dc.barChart('#magnitude-chart'); // Number of Events by Magnitude
+			var barChart2 = dc.barChart('#depth-chart'); // Events by Depth (km)
+			var lineChart3 = dc.lineChart('#time-chart'); // Events per hour
+
+			var map = L.map('mapid').setView([-41.05,172.93], 5); // map
+			L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="http://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+				maxZoom: 17
+			}).addTo(map);
+			
+			// load data from a csv file
+			d3.csv("quakes.csv", function (data) {
+
+			  // format our data
+			  var dtgFormat = d3.time.format("%Y-%m-%dT%H:%M:%S"); // ex: 2013-08-17T19:52:50
+			  //console.log(dtgFormat.parse("2013-08-17T19:52:50"))
+			  data.forEach(function(d){
+			  	
+			    d.newOriginTime = dtgFormat.parse( d.origintime.substr(0,19) );
+			    d.mag = d3.round(+d.magnitude,1);
+			    d.dep = d3.round(+d.depth,0);
+			    d.latit = +d.longitude;
+			    d.longi = +d.latitude;
+
+			    var circle = L.circle([d.latit, d.longi], 5000*d.mag, {
+					color: '#fd8d3c',
+					weight: 2,
+					fillColor: '#fecc5c',
+					fillOpacity: 0.5
+					}).addTo(map);
+
+			    var tooltip = L.tooltip({
+					target: circle,
+					map: map,
+					html: "Magnitude: "+d.mag+"<br>Time: "+d.origintime.substr(0,19),
+					padding: '4px 8px'
+					});
+
+			  });
+
+
+			  // Run the data through crossfilter and load our 'facts'
+			  var facts = crossfilter(data);
+
+			  //Create a dimension for Magnitude
+			  var magnitudeDim = facts.dimension(function(d){
+                return d.mag;
+           	  });
+			  
+			  //Create a group for Magnitude that just counts the number of elements in the group
+			  var magnitudeGroup = magnitudeDim.group();
+
+			  // Create a dimension for Depth
+			  var depthDim = facts.dimension(function(d){
+                return d.dep;
+           	  });
+
+			  //Create a group for Depth that just counts the number of elements in the group
+			  var depthGroup = depthDim.group();
+
+			  // Create a dimension just for the hour from the datetime in the dataset
+			  //hint: use d3.time.hour() function
+			  var hourDim = facts.dimension(function(d){
+			  	return d3.time.hour( d.newOriginTime );
+			  });
+
+			  //Create a group for the hour dimension that just counts the number of elements per hour
+			  var hourGroup = hourDim.group();
+
+			  console.log(facts.all()); //all() retorna todos os registros brutos
+
+
+			  // Setup the charts
+    
+			  // Configure Magnitude Bar Graph
+			  // 480 x 150
+			  // x dimension domain: [0.5, 7.5]
+			  //use a gap of 65, this number is very obscure. It seems to depend on the width of the chart and on the number of dimensions. It was found using trial and error.
+			  //set elasticY to true
+			  barChart1 
+                .width(480)
+                .height(150)
+                .margins({top: 10, right: 50, bottom: 20, left: 40})
+                .dimension(magnitudeDim)
+                .group(magnitudeGroup)
+                .gap(65)
+                .x(d3.time.scale().domain(0.5,7.5))
+                .xUnits(dc.units.ordinal)
+                .renderHorizontalGridLines(true)
+                .elasticY(true)
+
+			  // Configure Depth bar graph
+			  // 480 x 150
+			  // x dimension domain: [0, 100]
+			  barChart2 
+                .width(480)
+                .height(150)
+                .margins({top: 10, right: 50, bottom: 20, left: 40})
+                .dimension(depthDim)
+                .group(depthGroup)
+                .gap(65)
+                .x(d3.time.scale().domain(0,100))
+                .xUnits(dc.units.ordinal)
+                .renderHorizontalGridLines(true)
+
+			  // Configure Time line graph
+			  // height: 150
+			  //x dimension: build the time scale from the data: d3.time.scale().domain(d3.extent(data, function(d) { return d.dtime; }))
+			  lineChart3
+			   .width(800)
+	           .height(150)
+	           .margins({top: 30, right: 50, bottom: 25, left: 40})
+	           .dimension(hourDim)
+	           .x(d3.time.scale().domain(d3.extent(data, function(d){
+			  		return d.newOriginTime; 
+			    })));
+	           .xUnits(d3.time.days)
+	           .renderHorizontalGridLines(true)
+	           .legend(dc.legend().x(650).y(10).itemHeight(13).gap(5))
+	           .brushOn(false)
+	           .group(hourGroup);
+
+			  
+
+			  // Render the Charts
+			  dc.renderAll();
+  
+			});
+			</script>
+				
+        </body>
+</html>
