@@ -2,15 +2,17 @@
     <html>
         <head>
 			<title> Earthquake Data</title>
+			<link rel="stylesheet" href="css/leaflet.tooltip.css"/>
 			<link rel="stylesheet" href="css/dc.css">
     		<link rel="stylesheet" href="css/styles.css">
     		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
-    		<link rel="stylesheet" href=“css/leaflet.tooltip.css”/>
+    	
+    		<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
 			<script src="js/crossfilter.js" charset="utf-8"></script>
     		<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     		<script src="js/leaflet.tooltip.js"></script>
    			<script src="js/dc.js" charset="utf-8"></script>
-   			<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+   			
 
 		    <style type="text/css">  </style>		      
 		   
@@ -26,16 +28,15 @@
 				  <h4> Events by Depth (km) </h4>
 			    </div>   
 			  </div>
-
 			  <div>
 			    <div id='time-chart'>
 			      <h4> Events per hour </h4>
 			    </div>
 			  </div>
-
 			  <div>
+			  	<h4> map </h4>
 			    <div id='mapid'>
-			      <h4> map </h4>
+			      
 			    </div>
 			  </div>			  
 
@@ -63,8 +64,10 @@
 			    d.newOriginTime = dtgFormat.parse( d.origintime.substr(0,19) );
 			    d.mag = d3.round(+d.magnitude,1);
 			    d.dep = d3.round(+d.depth,0);
-			    d.latit = +d.longitude;
-			    d.longi = +d.latitude;
+			    d.latit = +d.latitude;
+			    d.longi = +d.longitude;
+
+			    console.log(d.latit + " " + d.longi);
 
 			    var circle = L.circle([d.latit, d.longi], 5000*d.mag, {
 					color: '#fd8d3c',
@@ -128,13 +131,12 @@
                 .dimension(magnitudeDim)
                 .group(magnitudeGroup)
                 .gap(65)
-                .x(d3.time.scale().domain(0.5,7.5))
-                .xUnits(dc.units.ordinal)
+                .x(d3.time.scale().domain([0.5,7.5]))
                 .renderHorizontalGridLines(true)
-                .elasticY(true)
+                .elasticY(true);
 
 			  // Configure Depth bar graph
-			  // 480 x 150
+			  // 480 x 150liniker
 			  // x dimension domain: [0, 100]
 			  barChart2 
                 .width(480)
@@ -143,9 +145,8 @@
                 .dimension(depthDim)
                 .group(depthGroup)
                 .gap(65)
-                .x(d3.time.scale().domain(0,100))
-                .xUnits(dc.units.ordinal)
-                .renderHorizontalGridLines(true)
+                .x(d3.time.scale().domain([0,100]))
+                .renderHorizontalGridLines(true);
 
 			  // Configure Time line graph
 			  // height: 150
@@ -157,14 +158,12 @@
 	           .dimension(hourDim)
 	           .x(d3.time.scale().domain(d3.extent(data, function(d){
 			  		return d.newOriginTime; 
-			    })));
+			    })))       
 	           .xUnits(d3.time.days)
 	           .renderHorizontalGridLines(true)
-	           .legend(dc.legend().x(650).y(10).itemHeight(13).gap(5))
 	           .brushOn(false)
 	           .group(hourGroup);
 
-			  
 
 			  // Render the Charts
 			  dc.renderAll();
